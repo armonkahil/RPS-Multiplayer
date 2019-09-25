@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <title>RPS-Multiplayer</title>
+    <linK rel="stylesheet" type="text/css" href="assets/css/reset.css" />
+    <!-- bootstrap CDN -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+
+    <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="navbar navbar-light justify-content-center">
+        <h1>Rock Paper Scissors</h1>
+        <h2>Let the games begin</h2>
+      </div>
+      <div class="card-deck">
+        <div class="card bg-transparent">
+          <h1 class="deck text-center" id="rock">R</h1>
+          <div class="card-body">
+            <h5 class="card-title text-center">Rock</h5>
+            <p class="card-text text-center">
+              Rock beats Scissors but loses to Paper.
+            </p>
+          </div>
+        </div>
+        <div class="card bg-transparent">
+          <h1 class="deck text-center" id="paper">P</h1>
+          <div class="card-body">
+            <h5 class="card-title text-center">Paper</h5>
+            <p class="card-text text-center">
+              Paper beats Rock but loses to Scissors.
+            </p>
+          </div>
+        </div>
+        <div class="card bg-transparent text-center">
+          <h1 class="deck" id="scissors">S</h1>
+          <div class="card-body">
+            <h5 class="card-title text-center">Scissors</h5>
+            <p class="card-text text-center">
+              Scissors beats Paper but loses to Rock.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="card-deck">
+        <div class="card bg-transparent">
+          <h1 class="deck text-center" id="p1">P1</h1>
+          <div class="card-body">
+            <h5 class="card-title text-center">Player 1</h5>
+            <p class="card-text text-center">
+              This is a longer card with supporting text below as a natural
+              lead-in to additional content. This content is a little bit
+              longer.
+            </p>
+          </div>
+        </div>
+        <div class="card bg-primary">
+          <div class="card-body trashRoll">
+          <div id="trashTalk"></div>  
+          </div>
+        </div>
+        <div class="card bg-transparent">
+          <h1 class="deck text-center" id="p2">P2</h1>
+          <div class="card-body">
+            <h5 class="card-title text-center">Player 2</h5>
+            <p class="card-text">
+              This card has supporting text below as a natural lead-in to
+              additional content.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="card bg-info">
+        <div class="card-title">
+          <h1 class="display-5 text-center">Trash Talk</h1>
+          
+        </div>
+        <form>
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="playerName"
+              aria-describedby="emailHelp"
+              placeholder="Name"
+            />
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Trash Talk</label>
+            <input
+              type="text"
+              class="form-control"
+              id="joke"
+              placeholder="Your mother..."
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.6.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.6.1/firebase-database.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="text/javascript" src="assets/javascript/game.js"></script>
+  </body>
+</html>
