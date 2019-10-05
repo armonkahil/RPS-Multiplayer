@@ -8,6 +8,12 @@
     />
 
     <title>RPS-Multiplayer</title>
+    <!-- jquery cdn -->
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
     <linK rel="stylesheet" type="text/css" href="assets/css/reset.css" />
     <!-- bootstrap CDN -->
     <link
@@ -16,26 +22,27 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
     <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     <div class="container">
-      <div class="navbar navbar-light justify-content-center">
-        <h1>Rock Paper Scissors</h1>
-        <h2>Let the games begin</h2>
+     <div class="navbar navbar-light justify-content">
+        <span id="player1" class="infinite">Player 1</span>
+        <span id="connected-viewers"></span>
+        <span id="player2" class="infinite">Player 2</span>
       </div>
-      <div class="card-deck">
-        <div class="card bg-transparent">
+      <div class="card-deck no-gutters">
+        <div class="card bg-transparent weapons">
           <h1 class="deck text-center" id="rock">R</h1>
           <div class="card-body">
             <h5 class="card-title text-center">Rock</h5>
-            <p class="card-text text-center">
+            <p class="card-text text-center" id="connected-viewers">
               Rock beats Scissors but loses to Paper.
             </p>
           </div>
         </div>
-        <div class="card bg-transparent">
+        <div class="card bg-transparent weapons">
           <h1 class="deck text-center" id="paper">P</h1>
           <div class="card-body">
             <h5 class="card-title text-center">Paper</h5>
@@ -44,7 +51,7 @@
             </p>
           </div>
         </div>
-        <div class="card bg-transparent text-center">
+        <div class="card bg-transparent text-center weapons">
           <h1 class="deck" id="scissors">S</h1>
           <div class="card-body">
             <h5 class="card-title text-center">Scissors</h5>
@@ -54,38 +61,12 @@
           </div>
         </div>
       </div>
-      <div class="card-deck">
-        <div class="card bg-transparent">
-          <h1 class="deck text-center" id="p1">P1</h1>
-          <div class="card-body">
-            <h5 class="card-title text-center">Player 1</h5>
-            <p class="card-text text-center">
-              This is a longer card with supporting text below as a natural
-              lead-in to additional content. This content is a little bit
-              longer.
-            </p>
-          </div>
-        </div>
-        <div class="card bg-primary">
-          <div class="card-body trashRoll">
-          <div id="trashTalk"></div>  
-          </div>
-        </div>
-        <div class="card bg-transparent">
-          <h1 class="deck text-center" id="p2">P2</h1>
-          <div class="card-body">
-            <h5 class="card-title text-center">Player 2</h5>
-            <p class="card-text">
-              This card has supporting text below as a natural lead-in to
-              additional content.
-            </p>
-          </div>
-        </div>
+      <div class="jumbotron text-black">
+        <div id="trashTalk"></div>
       </div>
       <div class="card bg-info">
         <div class="card-title">
           <h1 class="display-5 text-center">Trash Talk</h1>
-          
         </div>
         <form>
           <div class="form-group">
@@ -112,7 +93,11 @@
       </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.js"
+      integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+      crossorigin="anonymous"
+    ></script>
     <script src="https://www.gstatic.com/firebasejs/6.6.2/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/6.6.1/firebase-database.js"></script>
     <script
