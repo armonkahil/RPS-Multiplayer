@@ -6,21 +6,14 @@ body {
     height: 100%;
     
 }
-
-.deck {
-  font-size: 100px;
+img {
+  max-width: 10%;
 }
 
 .weapons:hover {
   border: 2px solid red;
 }
-#trashTalk {
-  color: black;
-}
 
-.trashRoll {
- overflow: hidden;
-}
 .table {
   overflow-x: hidden; /* Hide horizontal scrollbar */
   overflow-y: scroll; /* Add vertical scrollbar */
