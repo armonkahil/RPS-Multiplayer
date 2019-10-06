@@ -31,14 +31,14 @@ $(document).ready(function() {
     .database()
     .ref()
     .child("presence");
-var firstcomment = 0
-  trashDatabase.on("child_added", function (snap) {
+  var firstcomment = 0;
+  trashDatabase.on("child_added", function(snap) {
     console.log("snapshot", snap.val());
     console.log("snapshot of date", snap.Date);
     console.log("snapshot", snap);
     console.log("snapshot", snap);
     console.log("snapshot", snap);
-    
+
     var newEntry = $("<tr>");
     var newTrash = $("<th>");
     var newDate = $("<th>");
@@ -53,11 +53,11 @@ var firstcomment = 0
     // newEntry.append(newDat
     $("tbody").prepend(newEntry);
     firstcomment++;
-    console.log()
+    console.log();
     if (firstcomment > 4) {
       $("tr:last").remove();
     }
-    
+
     console.log("trash talk", snap.val());
   });
   gameDatabase.on("value", function(snap) {
@@ -128,9 +128,7 @@ var firstcomment = 0
     }
   });
   function resetTrashTalk() {
-    trashDatabase.set({
-    });
-   
+    trashDatabase.set({});
   }
 
   function firstpick() {
@@ -141,21 +139,20 @@ var firstcomment = 0
   }
 
   function letsstartTrashing() {
-    $("button").on("click", function (event) {
-      event.preventDefault()
-      var comment = $("#snap").val()
-      var whoSaidit = $("#playerName").val()
-      var time = new Date()
-      var now = time.toLocaleTimeString()
+    $("button").on("click", function(event) {
+      event.preventDefault();
+      var comment = $("#snap").val();
+      var whoSaidit = $("#playerName").val();
+      var time = new Date();
+      var now = time.toLocaleTimeString();
       console.log("time", now);
       console.log("name", whoSaidit);
       console.log("comment", comment);
       trashDatabase.push({
         Date: now,
         Name: whoSaidit,
-        Trash: comment})
+        Trash: comment
+      });
     });
   }
-
-
 });
