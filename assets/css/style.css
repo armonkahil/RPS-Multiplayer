@@ -3,6 +3,7 @@ body {
     background-repeat: no-repeat;
     background-size: 100%;
     color: orange;
+    height: 100%;
     
 }
 
@@ -19,4 +20,10 @@ body {
 
 .trashRoll {
  overflow: hidden;
+}
+.table {
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+  overflow-y: scroll; /* Add vertical scrollbar */
+  max-height: 30%;
+  font-size: 10 px;
 }

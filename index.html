@@ -22,12 +22,15 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css"
+    />
     <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     <div class="container">
-     <div class="navbar navbar-light justify-content">
+      <div class="navbar navbar-light justify-content">
         <span id="player1" class="infinite">Player 1</span>
         <span id="connected-viewers"></span>
         <span id="player2" class="infinite">Player 2</span>
@@ -61,9 +64,18 @@
           </div>
         </div>
       </div>
-      <div class="jumbotron text-black">
-        <div id="trashTalk"></div>
-      </div>
+      <table class="table table-dark" >
+        <thead>
+          <tr>
+            <th scope="col">Time</th>
+            <th scope="col">Name</th>
+            <th scope="col">Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+         
+        </tbody>
+      </table>
       <div class="card bg-info">
         <div class="card-title">
           <h1 class="display-5 text-center">Trash Talk</h1>
@@ -77,6 +89,7 @@
               id="playerName"
               aria-describedby="emailHelp"
               placeholder="Name"
+              required
             />
           </div>
           <div class="form-group">
@@ -84,7 +97,7 @@
             <input
               type="text"
               class="form-control"
-              id="joke"
+              id="snap"
               placeholder="Your mother..."
             />
           </div>
@@ -92,7 +105,6 @@
         </form>
       </div>
     </div>
-
     <script
       src="https://code.jquery.com/jquery-3.4.1.js"
       integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
@@ -110,7 +122,6 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"
     ></script>
-
     <script type="text/javascript" src="assets/javascript/game.js"></script>
   </body>
 </html>

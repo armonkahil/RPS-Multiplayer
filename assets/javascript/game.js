@@ -5,6 +5,7 @@ $(document).ready(function() {
   var player = "";
   var player1present = false;
   var player2present = false;
+
   var firebaseConfig = {
     apiKey: "AIzaSyAa7lMljbrokwSwsctL_l9FcdyIvS6KuQ8",
     authDomain: "armon-rps.firebaseapp.com",
@@ -30,16 +31,39 @@ $(document).ready(function() {
     .database()
     .ref()
     .child("presence");
-
-  trashDatabase.on("value", function(snap) {
-    var newtrash = snap.val().trash;
-    $("#trashTalk").text(newtrash);
+var firstcomment = 0
+  trashDatabase.on("child_added", function (snap) {
+    console.log("snapshot", snap.val());
+    console.log("snapshot of date", snap.Date);
+    console.log("snapshot", snap);
+    console.log("snapshot", snap);
+    console.log("snapshot", snap);
+    
+    var newEntry = $("<tr>");
+    var newTrash = $("<th>");
+    var newDate = $("<th>");
+    var newName = $("<td>");
+    newDate.attr("scope", "row");
+    newDate.text(snap.val().Date);
+    newEntry.append(newDate);
+    newName.text(snap.val().Name);
+    newEntry.append(newName);
+    newTrash.text(snap.val().Trash);
+    newEntry.append(newTrash);
+    // newEntry.append(newDat
+    $("tbody").prepend(newEntry);
+    firstcomment++;
+    console.log()
+    if (firstcomment > 4) {
+      $("tr:last").remove();
+    }
+    
     console.log("trash talk", snap.val());
   });
-  gameDatabase.on('value', function(snap) {
+  gameDatabase.on("value", function(snap) {
     console.log("game", snap.val());
   });
-  onlineDatabase.on('value', function(snap) {
+  onlineDatabase.on("value", function(snap) {
     console.log("presence", snap.val());
     player1present = snap.val().player1;
     player2present = snap.val().player2;
@@ -47,11 +71,11 @@ $(document).ready(function() {
     console.log("player 2 is ", player2present);
   });
 
-  function animateCSS (element, animationName, callback) {
+  function animateCSS(element, animationName, callback) {
     const node = document.querySelector(element);
     node.classList.add("animated", animationName);
 
-    function handleAnimationEnd () {
+    function handleAnimationEnd() {
       node.classList.remove("animated", animationName);
       node.removeEventListener("animationend", handleAnimationEnd);
 
@@ -99,49 +123,39 @@ $(document).ready(function() {
       player = "player2";
       player2present = true;
       console.log("i am ", player);
+      resetTrashTalk();
       letsstartTrashing();
-    
     }
   });
+  function resetTrashTalk() {
+    trashDatabase.set({
+    });
+   
+  }
 
   function firstpick() {
     $(".deck").on("click", function() {
       var value = this.id;
-      console.log(value)
-
+      console.log(value);
     });
   }
 
   function letsstartTrashing() {
-    $("button").on("click", function(event) {
-      event.preventDefault();
-      var yoMAMASO = $("#joke").val();
-      console.log(yoMAMASO);
-      trashDatabase.push(yoMAMASO);
+    $("button").on("click", function (event) {
+      event.preventDefault()
+      var comment = $("#snap").val()
+      var whoSaidit = $("#playerName").val()
+      var time = new Date()
+      var now = time.toLocaleTimeString()
+      console.log("time", now);
+      console.log("name", whoSaidit);
+      console.log("comment", comment);
+      trashDatabase.push({
+        Date: now,
+        Name: whoSaidit,
+        Trash: comment})
     });
   }
 
-  trashDatabase.on("child_added", function(childSnapshot) {
-    var newEntry = childSnapshot.val();
-    console.log(newEntry);
-    $("#trashTalk").after(newEntry);
-  });
 
-  // function playerFound() {
-  //   $(".player2").attr("border", "2p solid blue");
-  // }
-  function startThisBadBoy() {
-    database.ref().on("value", function(snapshot) {
-      if (snapshot.child("pick").exists() && snapshot.child("pick").exists()) {
-        console.log(pick);
-        letsstartTrashing();
-        playerFound();
-      } else {
-        firstpick();
-      }
-    });
-  }
-
-  // login();
-  // startThisBadBoy();
 });
