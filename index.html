@@ -30,15 +30,20 @@
   <body>
     <div class="container">
       <div class="navbar navbar-light justify-content">
-          <nav class="navbar navbar-light">
-              <a class="navbar-brand" href="https://armonkahil.github.io/RPS-Multiplayer/"><span>RPS</span></a>
-            </nav>
+        <nav class="navbar navbar-light">
+          <a
+            class="navbar-brand"
+            href="https://armonkahil.github.io/RPS-Multiplayer/"
+            ><span>RPS</span></a
+          >
+        </nav>
         <span id="connected-viewers"></span>
       </div>
       <div class="card-deck no-gutters">
         <div class="card bg-transparent infinite" id="player1">
           <h1 class="deck text-center">Player 1</h1>
           <div class="card-body">
+            <h5 class="card-title text-center" id="p1Pick">Pick:</h5>
             <h5 class="card-title text-center" id="p1Wins">Wins</h5>
             <h5 class="card-title text-center" id="p1Losses">Losses</h5>
           </div>
@@ -46,18 +51,17 @@
         <div class="card bg-transparent text-center infinite" id="player2">
           <h1 class="deck">Player 2</h1>
           <div class="card-body">
+            <h5 class="card-title text-center" id="p2Pick">Pick:</h5>
             <h5 class="card-title text-center" id="p2Wins">Wins</h5>
             <h5 class="card-title text-center" id="p2Losses">Loses</h5>
           </div>
         </div>
       </div>
-      <div class="card bg-transparent weapons">
-        <h1 class="deck text-center" id="RPS">RPS</h1>
-        <div class="card-body">
-          <span id="rock" class="weapons">Rock</span>
-          <span id="paper" class="weapons">Paper</span>
-          <span id="Scissors" class="weapons">Scissors</span>
-        </div>
+      <div class="card bg-transparent">
+        <h1 class="deck text-center weapons" id="rock">Rock</h1>
+        <h1 class="deck text-center weapons" id="paper">Paper</h1>
+        <h1 class="deck text-center weapons" id="scissors">Scissors</h1>
+        <div class="card-body" id="results"></div>
       </div>
       <table class="table table-dark">
         <thead>
