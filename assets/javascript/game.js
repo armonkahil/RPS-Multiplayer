@@ -54,20 +54,39 @@ $(document).ready(function () {
     console.log('Errors handled: ' + errorObject.code)
   })
 
-  gameDatabase.on('value', function (snap) {
-    console.log('game', snap.val())
-  },
-  function (errorObject) {
-    console.log('Errors handled: ' + errorObject.code)
-  })
+  // gameDatabase.on('value', function (snap) {
+  //   console.log('game', snap.val())
+  //   if (snap.child('player1pick').exists() && snap.child('player2pick').exists()) {
+      
+  //   } else {
 
-  onlineDatabase.on('value', function (snap) {
-    console.log('presence', snap.val())
-    player1present = snap.val().player1
-    player2present = snap.val().player2
-    console.log('player 1 is ', player1present)
-    console.log('player 2 is ', player2present)
-    firstpick()
+  //   }
+  // },
+  // function (errorObject) {
+  //   console.log('Errors handled: ' + errorObject.code)
+  // })
+// if the value of online database changes, run this function
+  onlineDatabase.on('value', function (snapshot) {
+    if (snapshot.child('player1').exists() && snapshot.child('player2').exists()) {
+      onlineDatabase.set({
+        player1: true,
+        player2: true
+      })
+      player = 'player2'
+      console.log('presence', snapshot.val())
+      player1present = true
+      player2present = true
+      console.log('player 1 is ', player1present)
+      console.log('player 2 is ', player2present)
+      playerPick()
+    } else {
+      onlineDatabase.set({
+        player1: true,
+        player2: false
+      })
+      player = "player1"
+    }
+    console.log('I am ', player)
   },
   function (errorObject) {
     console.log('Errors handled: ' + errorObject.code)
@@ -119,23 +138,14 @@ $(document).ready(function () {
     if (present === 1) {
       animateCSS('#player1', 'bounce')
       player = 'player1'
-      onlineDatabase.set({
-        player1: true,
-        player2: false
-      })
       console.log('I am ', player)
     } else if (present === 2) {
       // animateCSS('#player1', 'bounce')
       animateCSS('#player2', 'bounce')
-      player = 'player2'
-      onlineDatabase.set({
-        player1: true,
-        player2: true
-      })
       console.log('i am ', player)
       resetTrashTalk()
       letsstartTrashing()
-      firstpick()
+      playerPick()
     }
   }, function (errorObject) {
     console.log('Errors handled: ' + errorObject.code)
@@ -145,12 +155,38 @@ $(document).ready(function () {
     trashDatabase.set({})
   }
 
-  function firstpick () {
+  function playerPick () {
+    var newPlayer = player +'pick'
+    console.log('running first pick')
     if (player1present && player2present) {
       $('.weapons').on('click', function () {
-        var value = this.id
-        console.log(value)
-      })
+        var RPS = this.id
+        gameDatabase.on('value', function (snap) {
+          console.log(snap.val())        
+          if (snap.child('player1pick').exists() && snap.child('player2pick').exists()) {
+          // if there is a pick already stored
+            if (newPlayer == 'player1pick') {
+              gameMechanics(RPS, snap.val().player2pick)
+            } else if (newPlayer == 'player2pick') {
+              gameMechanics(snap.val().player1pick, RPS)
+            }
+          } else {
+            // if there is no pick stored
+            if (newPlayer === 'player1pick') {
+              gameDatabase.set({
+                newPlayer: RPS,
+                player2pick: 'none'
+              })
+            } else if (newPlayer === 'player2pick') {
+              gameDatabase.set({
+                player1pick: 'none',
+                newPlayer: RPS
+              })
+            }
+          }
+        })
+      }
+      )
     }
   }
 
