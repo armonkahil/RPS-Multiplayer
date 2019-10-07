@@ -139,7 +139,7 @@ $(document).ready(function () {
   connectionsRef.on('value', function (snap) {
     var present = snap.numChildren()
     // ticker for current number of players
-    $('#connected-viewers').text(present)
+    $('#connected-viewers').text('Number of connected players: ' + present)
     //
     if (present === 1) {
       animateCSS('#player1', 'bounce')
