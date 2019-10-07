@@ -43,7 +43,7 @@ $(document).ready(function () {
     .child('presence')
   gameDatabase.remove()
   onlineDatabase.remove()
-  trashDatabase.remove()
+  
   // ===========================================================================
   // // ========================================================================
   // // =====================================================================
@@ -55,9 +55,7 @@ $(document).ready(function () {
   // =====================================================================
   // ========================================================================
   // ===========================================================================
-  trashDatabase.on('child_added', newComment, errorError)
-  
-  function newComment (snap) {
+  trashDatabase.on('child_added', function (snap) {
     var newEntry = $('<tr>')
     var newTrash = $('<th>')
     var newDate = $('<th>')
@@ -74,11 +72,10 @@ $(document).ready(function () {
     if (firstcomment > 3) {
       $('tr:last').remove()
     }
-  }
-
-  function errorError (errorObject) {
-    console.log('Errors handled: ' + errorObject.code)
-  }
+  })
+  //  function (errorObject) {
+  //   console.log('Errors handled: ' + errorObject.code)
+  // }
 
   onlineDatabase.on('value', function (snapshot) {
     if (snapshot.child('player1').exists() && snapshot.child('player2').exists()) {
@@ -121,12 +118,7 @@ $(document).ready(function () {
 
     node.addEventListener('animationend', handleAnimationEnd)
   }
-
   var connectionsRef = database.ref('/connections')
-
-  // '.info/connected' is a special location provided by Firebase that is updated
-  // every time the client's connection state changes.
-  // '.info/connected' is a boolean value, true if the client is connected and false if they are not.
   var connectedRef = database.ref('.info/connected')
 
   // When the client's connection state changes...
@@ -146,8 +138,9 @@ $(document).ready(function () {
   // When first loaded or when the connections list changes...
   connectionsRef.on('value', function (snap) {
     var present = snap.numChildren()
-
+    // ticker for current number of players
     $('#connected-viewers').text(present)
+    //
     if (present === 1) {
       animateCSS('#player1', 'bounce')
       player = 'player1'
@@ -160,7 +153,6 @@ $(document).ready(function () {
       $('#player1').removeClass('bounce')
       animateCSS('#player2', 'bounce')
       console.log('i am ', player)
-      resetTrashTalk()
       letsstartTrashing()
       playerPick()
     }
@@ -179,7 +171,7 @@ $(document).ready(function () {
       $('.weapons').on('click', function () {
         var RPS = this.id
         console.log('my pick as', newPlayer + ' is ' + RPS)
-        gameDatabase.once('value', function (snap) {
+        gameDatabase.o('value', function (snap) {
           console.log(snap.val())
           // if a pick has been submitted
           if (snap.child('player1pick').exists() && snap.child('player2pick').exists()) {
@@ -251,22 +243,20 @@ $(document).ready(function () {
   // Chat function
   // =============================================================================
   function letsstartTrashing () {
-    $('button').on('click', function (event) {
+    $('.btn').on('click', function (event) {
       event.preventDefault()
       var comment = $('#snap').val()
       var whoSaidit = $('#playerName').val()
-      var time = new Date()
-      var now = time.toLocaleTimeString()
-      console.log('time', now)
       console.log('name', whoSaidit)
       console.log('comment', comment)
-      trashDatabase.push({
-        Date: now,
+      var time = new Date()
+      var now = time.toLocaleTimeString()
+      trashDatabase.push({ 
         Name: whoSaidit,
-        Trash: comment
+        Trash: comment,
+        Date: now
       })
-    }, function (errorObject) {
-      console.log('Errors handled: ' + errorObject.code)
-    })
+    }
+    )
   }
-});
+})
