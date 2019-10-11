@@ -3,18 +3,18 @@ $(document).ready(function () {
   // ===========================================================================
   // Global Variables
   // ===========================================================================
-  var p1Wins = 0;
-  var p1Losses = 0;
-  var p2Wins = 0;
-  var p2Losses = 0;
-  var ties = 0;
+  var p1Wins = 0
+  var p1Losses = 0
+  var p2Wins = 0
+  var p2Losses = 0
+  var ties = 0
   var counter = [p1Wins, p1Losses, p2Wins, p2Losses, ties]
   var player = ''
-  var player1present = false
-  var player2present = false
+  var readytoPlay = false
   var firstcomment = 0
+  var pickmade = false
   // =============================================================================
-  // Firebase
+  // Firebase variables
   // =============================================================================
   var firebaseConfig = {
     apiKey: 'AIzaSyAa7lMljbrokwSwsctL_l9FcdyIvS6KuQ8',
@@ -27,23 +27,22 @@ $(document).ready(function () {
   }
 
   firebase.initializeApp(firebaseConfig)
+
   var database = firebase.database()
   console.log(database)
   var gameDatabase = firebase
     .database()
     .ref()
     .child('gameObject')
+  var pickDatabase = firebase
+    .database()
+    .ref()
+    .child('picked')
   var trashDatabase = firebase
     .database()
     .ref()
     .child('trashtalk')
-  var onlineDatabase = firebase
-    .database()
-    .ref()
-    .child('presence')
-  gameDatabase.remove()
-  onlineDatabase.remove()
-  
+
   // ===========================================================================
   // // ========================================================================
   // // =====================================================================
@@ -73,38 +72,18 @@ $(document).ready(function () {
       $('tr:last').remove()
     }
   })
-  //  function (errorObject) {
-  //   console.log('Errors handled: ' + errorObject.code)
-  // }
 
-  onlineDatabase.on('value', function (snapshot) {
-    if (snapshot.child('player1').exists() && snapshot.child('player2').exists()) {
-      onlineDatabase.set({
-        player1: true,
-        player2: true
-      })
-      player = 'player2'
-      console.log('presence', snapshot.val())
-      player1present = true
-      player2present = true
-      console.log('player 1 is ', player1present)
-      console.log('player 2 is ', player2present)
-      playerPick()
-    } else {
-      onlineDatabase.set({
-        player1: true,
-        player2: false
-      })
-      player = 'player1'
-      player1present = true
-      player2present = false
+  gameDatabase.on('value', function (snap) {
+    console.log('child added', snap.val())
+    if (snap.exists()) {
+      if (!pickmade) {
+        $('#p2Pick').text('Pick: ' + snap.val().pick)
+      } else if (pickmade) {
+        $('#p1Pick').text('Pick: ' + snap.val().pick)
+      }
     }
-    console.log('I am ', player)
-  },
-  function (errorObject) {
-    console.log('Errors handled: ' + errorObject.code)
   })
-
+  
   function animateCSS (element, animationName, callback) {
     const node = document.querySelector(element)
     node.classList.add('animated', animationName)
@@ -142,19 +121,19 @@ $(document).ready(function () {
     $('#connected-viewers').text('Number of connected players: ' + present)
     //
     if (present === 1) {
-      animateCSS('#player1', 'bounce')
       player = 'player1'
       console.log('I am ', player)
-      player2present = false
       gameDatabase.remove()
-      onlineDatabase.remove()
+      readytoPlay = false
+      console.log('not ready to play', readytoPlay)
       $('#player2').removeClass('bounce')
     } else if (present === 2) {
-      $('#player1').removeClass('bounce')
+      gameDatabase.remove()
       animateCSS('#player2', 'bounce')
-      console.log('i am ', player)
+      readytoPlay = true
+      console.log('ready to play', readytoPlay)
       letsstartTrashing()
-      playerPick()
+      pick()
     }
   }, function (errorObject) {
     console.log('Errors handled: ' + errorObject.code)
@@ -164,45 +143,36 @@ $(document).ready(function () {
     trashDatabase.remove()
   }
 
-  function playerPick () {
-    var newPlayer = player + 'pick'
-    console.log('running first pick')
-    if (player1present && player2present) {
+  // revised player pick function
+  function pick () {
+    console.log('running pick function')
+    if (readytoPlay && !pickmade) {
       $('.weapons').on('click', function () {
+        pickmade = true
         var RPS = this.id
-        console.log('my pick as', newPlayer + ' is ' + RPS)
-        gameDatabase.o('value', function (snap) {
+        console.log('my pick is ' + RPS)
+        $('#p1Pick').text('Pick: ' + RPS)
+        gameDatabase.once('value', function (snap) {
           console.log(snap.val())
-          // if a pick has been submitted
-          if (snap.child('player1pick').exists() && snap.child('player2pick').exists()) {
-          // if there is a pick already stored
-          // if im player 1 then
-            console.log(snap.val().player1pick)
-            console.log(snap.val().player2pick)
-            if (newPlayer === 'player1pick') {
-              // send my pick and player 2 pick to gameMechanics
-              gameMechanics(RPS, snap.val().player2pick)
-            // if im player 2 then
-            } else if (newPlayer === 'player2pick') {
-              // send my pick and player 1 pick to gameMechanics
-              gameMechanics(snap.val().player1pick, RPS)
-            } else {
-              console.log('There is something wrong with the players')
-            }
-          } else {
-            // if there is no pick stored
-            if (newPlayer === 'player1pick') {
-              gameDatabase.child('player1pick').update({ player1pick: RPS })
-            } else if (newPlayer === 'player2pick') {
-              gameDatabase.child('player2pick').update({ player2pick: RPS })
-            }
+      
+          // if pick has been submitted
+          if (snap.exists()) {
+            console.log('found other pick', snap.val().pick)
+            gameMechanics(RPS, snap.child('pick').val())
+          } else {      
+            gameDatabase.set({ 
+              pick: RPS,
+              picked: true
+            })
+            $('#p1Pick').text('Pick: ' + RPS)
+            console.log('pushed pick')
           }
         })
-      }
-      )
+      })
     }
   }
- 
+
+
   function playerOneWins () {
     console.log('pick 1 won')
     p1Wins++
@@ -215,18 +185,19 @@ $(document).ready(function () {
     console.log('player 2 won')
     p2Wins++
     p1Losses++
-    $('#p2Wins').text('Wins: ', p2Wins)
-    $('#p1Losses').text('Lost: ', p1Losses)
+    $('#p2Wins').text('Wins: ' + p2Wins)
+    $('#p1Losses').text('Lost: ' + p1Losses)
   }
 
   function tiesSuck () {
     ties++
-    $('.ties').text('Ties: ', ties)
+    $('.ties').text('Ties: ' + ties)
   }
 
   function gameMechanics (pick1, pick2) {
     console.log('running gameMechanics')
     console.log('pick 1 is', pick1, ' and pick 2 is', pick2, '.')
+    pickmade = false
     if ((pick1 === 'rock') || (pick1 === 'paper') || (pick1 === 'scissors')) {
       if ((pick1 === 'rock' && pick2 === 'scissors') || (pick1 === 'scissors' && pick2 === 'paper') || (pick1 === 'paper' && pick2 === 'rock')) {
         playerOneWins(p1Wins, p2Losses)
@@ -239,6 +210,7 @@ $(document).ready(function () {
       console.log(counter)
     }
   }
+
   // =============================================================================
   // Chat function
   // =============================================================================
