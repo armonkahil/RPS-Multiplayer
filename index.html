@@ -30,7 +30,11 @@
     />
     <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
   </head>
+
   <body>
+    <!-- =================================================================== -->
+    <!-- navbar -->
+    <!-- =================================================================== -->
     <div class="container">
       <div class="navbar navbar-light justify-content">
         <nav class="navbar navbar-light">
@@ -41,11 +45,17 @@
           >
         </nav>
         <span>Players</span>
+        <!-- =============================================================== -->
+        <!-- shows number of connected players -->
+        <!-- =============================================================== -->
         <span id="connected-viewers"></span>
       </div>
       <div class="card-deck no-gutters">
-        <div class="card bg-transparent infinite" id="player1">
-          <h1 class="deck text-center">Player 1</h1>
+        <!-- =============================================================== -->
+        <!-- player 1 -->
+        <!-- =============================================================== -->
+        <div class="card bg-transparent text-center infinite" id="player1">
+          <h1 class="deck" id="firstPlayername">Player 1</h1>
           <div class="card-body">
             <h5 class="card-title text-center" id="p1Pick">Pick:</h5>
             <h5 class="card-title text-center" id="p1Wins">Wins</h5>
@@ -53,8 +63,11 @@
           </div>
           <h5 class="card-title text-center ties">Ties</h5>
         </div>
+        <!-- =============================================================== -->
+        <!-- player 2 -->
+        <!-- =============================================================== -->
         <div class="card bg-transparent text-center infinite" id="player2">
-          <h1 class="deck">Player 2</h1>
+          <h1 class="deck" id="NOOBMASTER69">Player 2</h1>
           <div class="card-body">
             <h5 class="card-title text-center" id="p2Pick">Pick:</h5>
             <h5 class="card-title text-center" id="p2Wins">Wins:</h5>

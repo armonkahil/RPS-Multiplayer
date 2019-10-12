@@ -5,3 +5,4 @@ The purpose of this assignment is to demonstrate my knowledge of firebase. Only 
 
 ## Instructions
 When a player is available, Player 1 or Player 2 will animate.
+## There are known issues with this push.
