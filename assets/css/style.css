@@ -19,3 +19,6 @@ span {
   color: orange;
  
 }
+#gameReady {
+  border-bottom: 2px solid orange;
+}
