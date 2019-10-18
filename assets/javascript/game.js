@@ -53,6 +53,12 @@ $(document).ready(function () {
     .database()
     .ref()
     .child('trashtalk')
+  var winsDatabase = firebase.database().ref().child('Wins')
+  var lossesDatabase = firebase.database().ref().child('Losses')
+  var tiesDatabase = firebase.database().ref().child('ties')
+  var readyDatabase = firebase.database().ref().child('ready')
+
+ 
   // ==========================================================================
   // connections
   // ========================================================================== 
@@ -64,6 +70,23 @@ $(document).ready(function () {
   // add name to player 1 card
   $('firstPlayername').text(playerName)
 
+  var Key = function (name, pick, picked, wins, losses, line) {
+    this.name = name
+    this.pick = pick
+    this.picked = picked
+    this.wins = wins
+    this.losses = losses
+    this.dateAdded = firebase.database.ServerValue.TIMESTAMP
+    this.line = line
+    var time = new Date()
+    this.now = time.toLocaleTimeString()
+  }
+
+  var Commentary = function (name, comment, time) {
+    this.Name = name
+    this.Trash = comment
+    this.Date = time
+  }
   // ===========================================================================
   // // ========================================================================
   // // =====================================================================
@@ -74,58 +97,52 @@ $(document).ready(function () {
   // ==================================================================
   // =====================================================================
   // ========================================================================
-  // =========================================================================== 
+  // ===========================================================================
   // ===========================================================================
   // database listener for chat function
   // ===========================================================================
   trashDatabase.on('child_added', function (snap) {
     updateChat(snap)
   })
-  // initial key pushed to database
-  // var newKey = {
-  //   pick: 'not yet',
-  //   picked: false,
-  //   // the original design of the this app had dynamic identity protocols. When players logged in, the protocols adjusted player 1 and 2 accordingly. By adding a name to the key, the app no longer has to change identities. It can just check the name of the pick.
-  //   name: playerName,
-  //   wins: p1Wins,
-  //   losses: p1Losses,
-  //   dateAdded: firebase.database.ServerValue.TIMESTAMP
-  // }
-  // push key to database
-  // gameDatabase.push(newKey)
-  // database listener for other player 2 pick and name
-  gameDatabase.on('value', function (snap) {
-    // if object exists
-    if (snap.exists()) {
-      // set name of key to someDude variable
-      var someone = snap.val().name
-      var getThepick = snap.val().picked
-      console.log('adfadfsadfsadfsadfasdfafdsfd', typeof (snap.val().picked))
-      console.log('adfafadfad', JSON.parse(getThepick))
-      // if name equal the name of player 1
-      if (someone != playerName) {
-        // post name to player 2 board with stats
-        otherBoard(snap)
-        localBoard()
-        if (getThepick == 'true') {
-          player2pick = snap.val().pick
-          console.log('player 2 pick made', pick2)
-          pick2 = true
+
+  function clockRunning () {
+    gameDatabase.on('child_added', function (snap) {
+      console.log(snap.val())
+      // if object exists
+      if (snap.child().exists()) {
+        // set name of key to someDude variable
+        var someone = snap.val().name
+        var getThepick = snap.val().picked
+        // if name equal the name of player 1
+        if (someone != playerName) {
+          // post name to player 2 board with stats
+          otherBoard(snap)
+          localBoard()
+          if (getThepick == 'true') {
+            player2pick = snap.val().pick
+            console.log('player 2 pick made', pick2)
+            pick2 = true
+          }
+          // if player 1 and object name are the name, update player 1 with name and stats
+        } else if (someone == playerName) {
+          myBoard(snap)
+          if (getThepick == 'true') {
+            player1pick = snap.val().pick
+            pick1 = true
+            console.log('player 1 pick made', pick1)
+          }
         }
-        // if player 1 and object name are the name, update player 1 with name and stats
-      } else if (someone == playerName) {
-        myBoard(snap)
-        if (getThepick == 'true') {
-          player1pick = snap.val().pick
-          pick1 = true
-          console.log('player 1 pick made', pick1)
+        if (pick1 && pick2) {
+          gameMechanics(player1pick, player2pick)
+          readytoPlay = false
         }
       }
-      if (pick1 && pick2) {
-        gameMechanics(player1pick, player2pick)
-      }
-    }
-  })
+    })
+  }
+  function scoreKeeper () {
+
+  }
+
   // chat display function
   function updateChat (snap) {
     var newEntry = $('<tr>')
@@ -218,49 +235,50 @@ $(document).ready(function () {
   }, function (errorObject) {
     console.log('Errors handled: ' + errorObject.code)
   })
+
   // player setup
   function playerSetup (present) {
-    var newKey = {
-      name: playerName,
-      pick: 'not yet',
-      picked: false,
-      wins: p1Wins,
-      losses: p1Losses,
-      dateAdded: firebase.database.ServerValue.TIMESTAMP
-    }
+    
     // update ticker with number of players
     $('#connected-viewers').text('Number of connected players: ' + present)
     // if only on player present or if player 2 leaves
     if (present === 1) {
+      var newPlayer = new Key(playerName, 'not yet', false, p1Wins, p1Losses, 'line 255')
+
       // set gameDatabase key
-      gameDatabase.set(newKey)
+      gameDatabase.push(newPlayer)
       console.log('i am ' + playerName)
       // reset readytoplay to false
       readytoPlay = false
+      readyDatabase.push(false)
       console.log('not ready to play', readytoPlay)
       // stop second player display from bouncing
       $('#player2').removeClass('bounce')
       // if 2 players are present
     } else if (present === 2) {
+      var newPlayer = new Key(playerName, 'not yet', false, p1Wins, p1Losses, 'line 268')
       // push credentials to gameDatabase object
-      gameDatabase.push(newKey)
+      gameDatabase.push(newPlayer)
+      gameDatabase.onDisconnect().remove()
       console.log('I am ' + playerName)
       // animate second player display
       animateCSS('#player2', 'bounce')
       // ready to play
       readytoPlay = true
+      readyDatabase.push(true)
       console.log('ready to play', readytoPlay)
       // start chat function
       letsstartTrashing()
       // start pick function
       pick()
+      clockRunning()
     }
   }
 
   // revised player pick function
   function pick () {
     console.log('running pick function')
-    // if two players are present and a pick hasnt already been made by player 1
+    // if two players are present and a pick hasn't already been made by player 1
     if (readytoPlay && !pickmade) {
       // event listener for choices
       $('.weapons').on('click', function () {
@@ -270,14 +288,7 @@ $(document).ready(function () {
         // set pickmade
         pickmade = true
         // build pick key
-        var pickKey = {
-          pick: RPS,
-          picked: 'true',
-          name: playerName,
-          wins: p1Wins,
-          losses: p1Losses,
-          dateAdded: firebase.database.ServerValue.TIMESTAMP
-        }
+        var pickKey = new Key(playerName, RPS, true, p1Wins, p1Losses, 'line 300')
         console.log('pick pushed', pickKey)
         // push key to database
         gameDatabase.push(pickKey)
@@ -287,33 +298,15 @@ $(document).ready(function () {
   function playerOneWins () {
     console.log('pick 1 won')
     p1Wins++
-    var newKey = {
-      pick: 'not yet',
-      picked: false,
-      name: playerName,
-      wins: p1Wins,
-      losses: p1Losses,
-      dateAdded: firebase.database.ServerValue.TIMESTAMP
-    }
-    gameDatabase.push(newKey)
-    // $('#p1Wins').text('Wins: ' + p1Wins)
-    // $('#p2Losses').text('Lost: ' + p2Losses)
+    var player1key = new Key(playerName, 'not yet', false, p1Wins, p1Losses, 'line 310')
+    gameDatabase.push(player1key)
   }
 
   function playerTwoWins () {
     console.log('player 2 won')
     p1Losses++
-    var newKey = {
-      pick: 'not yet',
-      picked: false,
-      name: playerName,
-      wins: p1Wins,
-      losses: p1Losses,
-      dateAdded: firebase.database.ServerValue.TIMESTAMP
-    }
-    gameDatabase.push(newKey)
-    // $('#p2Wins').text('Wins: ' + p2Wins)
-    // $('#p1Losses').text('Lost: ' + p1Losses)
+    var player1key = new Key(playerName, 'not yet', false, p1Wins, p1Losses, 'line 317')
+    gameDatabase.push(player1key)
   }
 
   function tiesSuck () {
@@ -336,6 +329,11 @@ $(document).ready(function () {
         playerTwoWins(p2Wins, p1Losses)
       }
     }
+    endGame()
+  }
+
+  function endGame () {
+
   }
   // =============================================================================
   // Chat function
@@ -344,16 +342,13 @@ $(document).ready(function () {
     $('.btn').on('click', function (event) {
       event.preventDefault()
       var comment = $('#snap').val()
-      var whoSaidit = $('#playerName').val()
+      var whoSaidit = playerName
       console.log('name', whoSaidit)
       console.log('comment', comment)
       var time = new Date()
       var now = time.toLocaleTimeString()
-      trashDatabase.push({ 
-        Name: playerName,
-        Trash: comment,
-        Date: now
-      })
+      var snapBack = new Commentary(whoSaidit, comment, now)
+      trashDatabase.push(snapBack)
     }
     )
   }
