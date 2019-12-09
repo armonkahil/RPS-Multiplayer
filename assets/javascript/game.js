@@ -53,12 +53,15 @@ $(document).ready(function () {
     .database()
     .ref()
     .child('trashtalk')
-  var winsDatabase = firebase.database().ref().child('Wins')
-  var lossesDatabase = firebase.database().ref().child('Losses')
-  var tiesDatabase = firebase.database().ref().child('ties')
+  trashDatabase.onDisconnect().remove()
+  var winnerDatabase = firebase.database().ref().child('Winner')
+  winnerDatabase.onDisconnect().remove()
+  var loserDatabase = firebase.database().ref().child('Loser')
+  loserDatabase.onDisconnect().remove()
+  var tieDatabase = firebase.database().ref().child('Tie')
+  tieDatabase.onDisconnect().remove()
   var readyDatabase = firebase.database().ref().child('ready')
-
- 
+  readyDatabase.onDisconnect().remove()
   // ==========================================================================
   // connections
   // ========================================================================== 
@@ -76,7 +79,6 @@ $(document).ready(function () {
     this.picked = picked
     this.wins = wins
     this.losses = losses
-    this.dateAdded = firebase.database.ServerValue.TIMESTAMP
     this.line = line
     var time = new Date()
     this.now = time.toLocaleTimeString()
@@ -120,13 +122,15 @@ $(document).ready(function () {
       if (snap.exists()) {
         // set name of key to someDude variable
         var someone = snap.val().name
+        // get the pick of the other player
         var getThepick = snap.val().picked
+        console.log(getThepick)       
         // if name equal the name of player 1
-        if (someone !== playerName) {
+        if (someone !== playerName)  {
           // post name to player 2 board with stats
           otherBoard(snap)
           localBoard()
-          if (getThepick === 'true') {
+          if (getThepick) {
             player2pick = snap.val().pick
             console.log('player 2 pick made', pick2)
             pick2 = true
@@ -134,23 +138,18 @@ $(document).ready(function () {
           // if player 1 and object name are the name, update player 1 with name and stats
         } else if (someone === playerName) {
           myBoard(snap)
-          if (getThepick === 'true') {
+          if (getThepick) {
             player1pick = snap.val().pick
             pick1 = true
             console.log('player 1 pick made', pick1)
           }
         }
-        if (pick1 && pick2) {
-          gameMechanics(player1pick, player2pick)
-          
+        if ((pick1 === true) && (pick2 === true)) {
+          gameMechanics(player1pick, player2pick, pick1, pick2)
         }
       }
     })
   }
-  function scoreKeeper () {
-
-  }
-
   // chat display function
   function updateChat (snap) {
     report('updateChat')
@@ -184,32 +183,23 @@ $(document).ready(function () {
     console.log('other pick made: ', pickmade)
     $('#p2Pick').text('Pick: ' + theOtherguypick)
     $('#NOOBMASTER69').text(theOtherguy)
-    $('#p2wins').text('Wins: ', info.val().wins)
-    $('#p2Losses').text('Losses: ', info.val().losses)
-    $('.ties').text('Ties: ', info.val().ties)
   }
 
   // player 1 board update function
   function myBoard (info) {
     report('myBoard')
-    console.log('player 1 info', info)
+    console.log('player 1 info', info.val())
     var myNameIs = info.val().name
     console.log('my name is: ', myNameIs)
     console.log('i picked: ', pickmade)
     $('#p1Pick').text('Pick: ' + info.val().pick)
     $('#firstPlayername').text(myNameIs)
-    $('#p1wins').text('Wins: ', info.val().wins)
-    $('#p1Losses').text('Losses: ', info.val().losses)
-    $('.ties').text('Ties: ', info.val().ties)
   }
 
   function localBoard () {
     report('localBoard')
     $('#p1Pick').text('Pick: ' + player1pick)
     $('#firstPlayername').text(playerName)
-    $('#p1wins').text('Wins: ', p1Wins)
-    $('#p1Losses').text('Losses: ', p1Losses)
-    $('.ties').text('Ties: ', ties)
   }
 
   // animate.css function
@@ -271,10 +261,9 @@ $(document).ready(function () {
       $('#gameReady').removeClass('bounce')
       // if 2 players are present
     } else if (present === 2) {
-      var newPlayer = new Key(playerName, 'not yet', false, p1Wins, p1Losses, 'line 268')
+      var newPlayer1 = new Key(playerName, 'not yet', false, p1Wins, p1Losses, 'line 268')
       // push credentials to gameDatabase object
-      gameDatabase.push(newPlayer)
-      gameDatabase.onDisconnect().remove()
+      gameDatabase.push(newPlayer1)
       console.log('I am ' + playerName)
       // animate second player display
       animateCSS('#gameReady', 'bounce')
@@ -293,6 +282,8 @@ $(document).ready(function () {
   // revised player pick function
   function pick () {
     report('pick')
+    console.log('readytoPlay=', readytoPlay)
+    console.log('pickmade=', pickmade)
     // if two players are present and a pick hasn't already been made by player 1
     if (readytoPlay && !pickmade) {
       // event listener for choices
@@ -307,52 +298,80 @@ $(document).ready(function () {
         console.log('pick pushed', pickKey)
         // push key to database
         gameDatabase.push(pickKey)
+        // turn event listener off
+        // $('.weapons').off('click')
       })
     }
   }
 
-  function playerOneWins () {
+  function playerOneWins (p1Wins, p2Losses) {
     report('playerOneWins')
     p1Wins++
-    var player1key = new Key(playerName, 'not yet', false, p1Wins, p1Losses, 'line 310')
-    gameDatabase.push(player1key)
+    p2Losses++
+    $('#p1Wins').text('Wins: ' + p1Wins)
+    $('#p2Losses').text('Losses: ' + p2Losses)
   }
 
-  function playerTwoWins () {
-    report('playerTwoWins')
+  function playerTwoWins (p1Losses, p2Wins) {
     p1Losses++
-    var player1key = new Key(playerName, 'not yet', false, p1Wins, p1Losses, 'line 317')
-    gameDatabase.push(player1key)
+    p2Wins++
+    $('#p2Wins').text('Wins: ' + p2Wins)
+    $('#p1Losses').text('Losses: ' + p1Losses)
+    report('playerTwoWins')
   }
 
   function tiesSuck () {
     report('Ties')
     ties++
     $('.ties').text('Ties: ' + ties)
+    // playerSetup()
   }
   // function to decide the winner
-  function gameMechanics (pickOne, pickTwo) {
-    report('gameMechanics')
+  function gameMechanics (pickOne, pickTwo, pick1, pick2) {
+    if (pick1 && pick2) {
+      report('gameMechanics')
 
-    console.log('pick 1 is ', pickOne, ' and pick 2 is ', pickTwo, '.')
-    // reset pickmade
-    pickmade = false
-    if ((pickOne === 'rock') || (pickOne === 'paper') || (pickOne === 'scissors')) {
-      if ((pickOne === 'rock' && pickTwo === 'scissors') || (pickOne === 'scissors' && pickTwo === 'paper') || (pickOne === 'paper' && pickTwo === 'rock')) {
-        playerOneWins(p1Wins, p2Losses)
-      } else if (pickOne === pickTwo) {
-        console.log('tie')
-        tiesSuck(ties)
-      } else {
-        playerTwoWins(p2Wins, p1Losses)
+      console.log('pick 1 is ', pickOne, ' and pick 2 is ', pickTwo, '.')
+      // reset pickmade
+      pickmade = false
+      gameDatabase.remove()
+      var winner = whoWon(pickOne, pickTwo)
+      switch (winner) {
+        case 1:
+          playerOneWins(p1Wins, p2Losses)
+          break
+        case 2:
+          playerTwoWins(p2Wins, p1Losses)
+          break
+        case 3:
+          tiesSuck(ties)
+          break
       }
-      readytoPlay = false
-      endGame()
-    }  
+      playAgain()
+    }
   }
 
-  function endGame () {
+  function whoWon (pickOne, pickTwo) {
+    if ((pickOne === 'rock') || (pickOne === 'paper') || (pickOne === 'scissors')) {
+      if ((pickOne === 'rock' && pickTwo === 'scissors') || (pickOne === 'scissors' && pickTwo === 'paper') || (pickOne === 'paper' && pickTwo === 'rock')) {
+        return 1
+      } else if (pickOne === pickTwo) {
+        return 3
+      } else {
+        return 2
+      }
+    }
+  }
 
+  function playAgain () {
+    pick1 = false
+    pick2 = false
+    readytoPlay = true
+    pickmade = false
+    player1pick = ''
+    player2pick = ''
+    clockRunning()
+    pick()
   }
   // =============================================================================
   // Chat function
@@ -373,4 +392,4 @@ $(document).ready(function () {
     )
   }
 })
-TODO: // When player 2 picks, it knocks player 1 pick out to false. Have to fix.
+
